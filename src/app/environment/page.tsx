@@ -8,7 +8,7 @@ export default async function Page({
   const params = await searchParams
 
   return (
-    <main className="max-w-4xl mx-auto">
+    <main className="max-w-4xl mx-4 md:mx-auto ">
       <DataTableEnvironment searchParams={params} />
     </main>
   )
