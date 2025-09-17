@@ -1,10 +1,8 @@
 "use client"
 
-import { FormEvent, useState } from "react";
+import { useState, useEffect } from "react";
 import { Settings, Trash } from "lucide-react";
-import { toast } from "sonner";
-
-import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -24,11 +22,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "../ui/dialog";
-import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+} from "@/components/ui/dialog";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 const createLocalId = () => Math.random().toString(36).slice(2, 10);
-const ENV_VAR_KEY_REGEX = /^[A-Z][A-Z0-9_]*$/;
 
 interface EnvironmentVariable {
   id: string;
@@ -42,7 +39,52 @@ interface Secret {
   value: string;
 }
 
-export default function EnvironmentForm() {
+export interface EnvironmentFormProps {
+  /**
+   * Initial environment name value
+   */
+  initialName?: string;
+  /**
+   * Initial description value
+   */
+  initialDescription?: string;
+  /**
+   * Callback fired when form data changes
+   */
+  onChange?: (data: {
+    name: string;
+    description: string;
+    github_org?: string;
+    github_repo?: string;
+    container_image?: string;
+    python_version?: string;
+    node_version?: string;
+    ruby_version?: string;
+    rust_version?: string;
+    go_version?: string;
+    bun_version?: string;
+    php_version?: string;
+    java_version?: string;
+    swift_version?: string;
+    setup_script_mode?: string;
+    setup_script?: string;
+    container_caching_enabled?: boolean;
+    internet_access_enabled?: boolean;
+    environment_variables?: Array<{ key: string; value: string }>;
+    secrets?: Array<{ key: string; value: string }>;
+  }) => void;
+  /**
+   * Custom CSS class name
+   */
+  className?: string;
+}
+
+export default function EnvironmentForm({
+  initialName = "",
+  initialDescription = "",
+  onChange,
+  className
+}: EnvironmentFormProps = {}) {
   const [setupScriptMode, setSetupScriptMode] = useState("1"); // "1" for Automatic, "2" for Manual
   const [environmentVariables, setEnvironmentVariables] = useState<EnvironmentVariable[]>(() => [
     { id: createLocalId(), key: "", value: "" },
@@ -53,13 +95,12 @@ export default function EnvironmentForm() {
 
   const [githubOrg, setGithubOrg] = useState("");
   const [githubRepo, setGithubRepo] = useState("");
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [name, setName] = useState(initialName);
+  const [description, setDescription] = useState(initialDescription);
   const [containerImage, setContainerImage] = useState("universal");
   const [containerCachingEnabled, setContainerCachingEnabled] = useState(false);
   const [internetAccessEnabled, setInternetAccessEnabled] = useState(false);
   const [setupScript, setSetupScript] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Package version states
   const [pythonVersion, setPythonVersion] = useState("3.12");
@@ -71,6 +112,40 @@ export default function EnvironmentForm() {
   const [phpVersion, setPhpVersion] = useState("8.4");
   const [javaVersion, setJavaVersion] = useState("21");
   const [swiftVersion, setSwiftVersion] = useState("6.1");
+
+  // Call onChange callback when form data changes
+  useEffect(() => {
+    if (onChange) {
+      onChange({
+        name,
+        description,
+        github_org: githubOrg,
+        github_repo: githubRepo,
+        container_image: containerImage,
+        python_version: pythonVersion,
+        node_version: nodeVersion,
+        ruby_version: rubyVersion,
+        rust_version: rustVersion,
+        go_version: goVersion,
+        bun_version: bunVersion,
+        php_version: phpVersion,
+        java_version: javaVersion,
+        swift_version: swiftVersion,
+        setup_script_mode: setupScriptMode,
+        setup_script: setupScript,
+        container_caching_enabled: containerCachingEnabled,
+        internet_access_enabled: internetAccessEnabled,
+        environment_variables: environmentVariables.filter(env => env.key.trim() || env.value.trim()),
+        secrets: secrets.filter(secret => secret.key.trim() || secret.value.trim())
+      });
+    }
+  }, [
+    name, description, githubOrg, githubRepo, containerImage,
+    pythonVersion, nodeVersion, rubyVersion, rustVersion, goVersion,
+    bunVersion, phpVersion, javaVersion, swiftVersion,
+    setupScriptMode, setupScript, containerCachingEnabled,
+    internetAccessEnabled, environmentVariables, secrets, onChange
+  ]);
 
   const addEnvironmentVariable = () => {
     setEnvironmentVariables((prev) => [
@@ -117,162 +192,9 @@ export default function EnvironmentForm() {
     }
   };
 
-  const resetForm = () => {
-    setGithubOrg("");
-    setGithubRepo("");
-    setName("");
-    setDescription("");
-    setContainerImage("universal");
-    setContainerCachingEnabled(false);
-    setInternetAccessEnabled(false);
-    setSetupScriptMode("1");
-    setSetupScript("");
-    setPythonVersion("3.12");
-    setNodeVersion("20");
-    setRubyVersion("3.4.4");
-    setRustVersion("1.89.0");
-    setGoVersion("1.24.3");
-    setBunVersion("1.2.14");
-    setPhpVersion("8.4");
-    setJavaVersion("21");
-    setSwiftVersion("6.1");
-    setEnvironmentVariables([{ id: createLocalId(), key: "", value: "" }]);
-    setSecrets([{ id: createLocalId(), key: "", value: "" }]);
-  };
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (isSubmitting) return;
-
-    const trimmedName = name.trim();
-    if (!trimmedName) {
-      toast.error("Environment name is required.");
-      return;
-    }
-
-    const sanitizedVariables: Array<{
-      name: string;
-      value: string;
-      is_secret: boolean;
-    }> = [];
-    const seenKeys = new Set<string>();
-    let hasValidationError = false;
-
-    const collectVariables = (
-      entries: Array<EnvironmentVariable | Secret>,
-      isSecret: boolean,
-    ) => {
-      entries.forEach((entry) => {
-        if (hasValidationError) return;
-
-        const key = entry.key.trim();
-        const value = entry.value.trim();
-
-        if (!key && !value) {
-          return;
-        }
-
-        if (!key || !value) {
-          toast.error("Environment variables and secrets require both a key and value.");
-          hasValidationError = true;
-          return;
-        }
-
-        const normalizedKey = key.toUpperCase();
-        if (!ENV_VAR_KEY_REGEX.test(normalizedKey)) {
-          toast.error(
-            "Keys must start with a letter and use only A-Z, 0-9, and underscores.",
-          );
-          hasValidationError = true;
-          return;
-        }
-
-        if (seenKeys.has(normalizedKey)) {
-          toast.error(`Duplicate key "${normalizedKey}" detected.`);
-          hasValidationError = true;
-          return;
-        }
-
-        seenKeys.add(normalizedKey);
-        sanitizedVariables.push({
-          name: normalizedKey,
-          value,
-          is_secret: isSecret,
-        });
-      });
-    };
-
-    collectVariables(environmentVariables, false);
-    collectVariables(secrets, true);
-
-    if (hasValidationError) {
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const supabase = createClient();
-      const setupMode = setupScriptMode === "2" ? "manual" : "automatic";
-      const scriptValue =
-        setupMode === "manual" ? setupScript.trim() || null : null;
-
-      const { data, error } = await supabase
-        .from("environments")
-        .insert({
-          github_org: githubOrg || null,
-          github_repo: githubRepo || null,
-          name: trimmedName,
-          description: description.trim() || null,
-          container_image: containerImage,
-          python_version: pythonVersion,
-          node_version: nodeVersion,
-          ruby_version: rubyVersion,
-          rust_version: rustVersion,
-          go_version: goVersion,
-          bun_version: bunVersion,
-          php_version: phpVersion,
-          java_version: javaVersion,
-          swift_version: swiftVersion,
-          setup_script_mode: setupMode,
-          setup_script: scriptValue,
-          container_caching_enabled: containerCachingEnabled,
-          internet_access_enabled: internetAccessEnabled,
-        })
-        .select("id")
-        .single();
-
-      if (error || !data) {
-        toast.error(error?.message ?? "Failed to create environment.");
-        return;
-      }
-
-      if (sanitizedVariables.length > 0) {
-        const { error: variableError } = await supabase
-          .from("environment_variables")
-          .insert(
-            sanitizedVariables.map((variable) => ({
-              ...variable,
-              environment_id: data.id,
-            })),
-          );
-
-        if (variableError) {
-          await supabase.from("environments").delete().eq("id", data.id);
-          toast.error(variableError.message);
-          return;
-        }
-      }
-
-      toast.success("Environment created.");
-      resetForm();
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-4xl mx-auto">
+    <div className={cn("flex flex-col gap-4 max-w-4xl mx-auto", className)}>
       <Card className="w-full shadow-none">
         <CardHeader>
           <CardTitle className=" text-blue-700 dark:text-blue-400">Environment</CardTitle>
@@ -656,11 +578,6 @@ export default function EnvironmentForm() {
         </CardContent>
       </Card>
 
-      <div className="flex flex-row gap-2 justify-end">
-        <Button className="w-fit" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Creating..." : "Create Environment"}
-        </Button>
-      </div>
-    </form>
+    </div>
   );
 }

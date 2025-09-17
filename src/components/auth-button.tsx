@@ -3,7 +3,6 @@
 import {
   ChevronRight,
   ChevronsUpDown,
-  LogIn,
   LogOut,
   Moon,
   Settings,

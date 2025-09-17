@@ -1,6 +1,7 @@
 import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
+import { ArrowUpRight } from "lucide-react"
+import Link from "next/link"
 
 import { cn } from "@/lib/utils"
 
@@ -17,7 +18,27 @@ const badgeVariants = cva(
           "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
-      },
+        gray: 
+          "border-transparent bg-gray-50 text-gray-600 dark:text-gray-400 dark:bg-gray-900/20 ring-1 ring-inset ring-gray-500/10 dark:ring-gray-600/50",
+        red: 
+          "border-transparent bg-red-50 text-red-700 dark:text-red-400 dark:bg-red-900/20 ring-1 ring-inset ring-red-600/10 dark:ring-red-600/30",
+        yellow: 
+          "border-transparent bg-yellow-50 text-yellow-800 dark:text-yellow-400 dark:bg-yellow-900/20 ring-1 ring-inset ring-yellow-600/20 dark:ring-yellow-600/30",
+        orange:
+          "border-transparent bg-orange-50 text-orange-800 dark:text-orange-400 dark:bg-orange-900/20 ring-1 ring-inset ring-orange-600/20 dark:ring-orange-600/30",
+        amber:
+          "border-transparent bg-amber-50 text-amber-800 dark:text-amber-400 dark:bg-amber-900/20 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-600/30",
+        green: 
+          "border-transparent bg-green-50 text-green-700 dark:text-green-400 dark:bg-green-900/20 ring-1 ring-inset ring-green-600/20 dark:ring-green-600/30",
+        blue: 
+          "border-transparent bg-blue-50 text-blue-700 dark:text-blue-400 dark:bg-blue-900/20 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-600/30",
+        indigo: 
+          "border-transparent bg-indigo-50 text-indigo-700 dark:text-indigo-400 dark:bg-indigo-900/20 ring-1 ring-inset ring-indigo-700/10 dark:ring-indigo-600/30",
+        purple: 
+          "border-transparent bg-purple-50 text-purple-700 dark:text-purple-400 dark:bg-purple-900/20 ring-1 ring-inset ring-purple-700/10 dark:ring-purple-600/30",
+        pink: 
+          "border-transparent bg-pink-50 text-pink-700 dark:text-pink-400 dark:bg-pink-900/20 ring-1 ring-inset ring-pink-700/10 dark:ring-pink-600/30",
+        },
     },
     defaultVariants: {
       variant: "default",
@@ -25,22 +46,129 @@ const badgeVariants = cva(
   }
 )
 
+// Helper function to get arrow color based on badge variant
+const getArrowColorClass = (variant: string) => {
+  switch (variant) {
+    case "blue":
+      return "text-blue-600 dark:text-blue-400";
+    case "green":
+      return "text-green-600 dark:text-green-400";
+    case "red":
+      return "text-red-600 dark:text-red-400";
+    case "yellow":
+      return "text-yellow-600 dark:text-yellow-400";
+    case "orange":
+      return "text-orange-600 dark:text-orange-400";
+    case "amber":
+      return "text-amber-600 dark:text-amber-400";
+    case "indigo":
+      return "text-indigo-600 dark:text-indigo-400";
+    case "purple":
+      return "text-purple-600 dark:text-purple-400";
+    case "pink":
+      return "text-pink-600 dark:text-pink-400";
+    case "gray":
+      return "text-gray-600 dark:text-gray-400";
+    case "destructive":
+      return "text-destructive";
+    case "secondary":
+      return "text-secondary-foreground";
+    case "default":
+      return "text-primary-foreground";
+    case "outline":
+    default:
+      return "text-muted-foreground";
+  }
+};
+
+export interface BadgeProps extends VariantProps<typeof badgeVariants> {
+  /**
+   * The content to display inside the badge
+   */
+  children?: React.ReactNode;
+  /**
+   * Additional CSS classes to apply to the badge
+   */
+  className?: string;
+  /**
+   * If provided, renders the badge as a link
+   */
+  href?: string;
+  /**
+   * Whether the link should open in a new tab
+   */
+  external?: boolean;
+  /**
+   * Whether to show the ArrowUpRight icon for links
+   */
+  showIcon?: boolean;
+}
+
 function Badge({
-  className,
   variant,
-  asChild = false,
-  ...props
-}: React.ComponentProps<"span"> &
-  VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
-  const Comp = asChild ? Slot : "span"
+  children,
+  className,
+  href,
+  external = false,
+  showIcon = true,
+}: BadgeProps) {
+  const badgeClasses = cn(
+    badgeVariants({ variant }),
+    href && showIcon && "transition-all duration-200 group-hover:pr-6",
+    className
+  );
+
+  const content = (
+    <>
+      <span
+        data-slot="badge"
+        className={badgeClasses}
+      >
+        {children}
+      </span>
+      {href && showIcon && (
+        <ArrowUpRight 
+          className={cn(
+            "size-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 -ml-7",
+            getArrowColorClass(variant || "default")
+          )} 
+        />
+      )}
+    </>
+  );
+
+  if (href) {
+    if (external) {
+      return (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 group cursor-pointer"
+        >
+          {content}
+        </a>
+      );
+    } else {
+      return (
+        <Link
+          href={href}
+          className="inline-flex items-center gap-1 group cursor-pointer"
+        >
+          {content}
+        </Link>
+      );
+    }
+  }
 
   return (
-    <Comp
+    <span
       data-slot="badge"
-      className={cn(badgeVariants({ variant }), className)}
-      {...props}
-    />
-  )
+      className={badgeClasses}
+    >
+      {children}
+    </span>
+  );
 }
 
 export { Badge, badgeVariants }

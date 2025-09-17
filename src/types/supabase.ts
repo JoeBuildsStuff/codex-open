@@ -12,9 +12,121 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "12.2.1 (d3f7cba)"
   }
-  test: {
+  codex_open: {
     Tables: {
-      [_ in never]: never
+      environment_variables: {
+        Row: {
+          created_at: string
+          environment_id: string
+          id: number
+          is_secret: boolean
+          name: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          environment_id: string
+          id?: number
+          is_secret?: boolean
+          name: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          environment_id?: string
+          id?: number
+          is_secret?: boolean
+          name?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "environment_variables_environment_id_fkey"
+            columns: ["environment_id"]
+            isOneToOne: false
+            referencedRelation: "environments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      environments: {
+        Row: {
+          bun_version: string
+          container_caching_enabled: boolean
+          container_image: string
+          created_at: string
+          created_by: string
+          description: string | null
+          github_org: string | null
+          github_repo: string | null
+          go_version: string
+          id: string
+          internet_access_enabled: boolean
+          java_version: string
+          name: string
+          node_version: string
+          php_version: string
+          python_version: string
+          ruby_version: string
+          rust_version: string
+          setup_script: string | null
+          setup_script_mode: string
+          swift_version: string
+          updated_at: string
+        }
+        Insert: {
+          bun_version?: string
+          container_caching_enabled?: boolean
+          container_image?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          github_org?: string | null
+          github_repo?: string | null
+          go_version?: string
+          id?: string
+          internet_access_enabled?: boolean
+          java_version?: string
+          name: string
+          node_version?: string
+          php_version?: string
+          python_version?: string
+          ruby_version?: string
+          rust_version?: string
+          setup_script?: string | null
+          setup_script_mode?: string
+          swift_version?: string
+          updated_at?: string
+        }
+        Update: {
+          bun_version?: string
+          container_caching_enabled?: boolean
+          container_image?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          github_org?: string | null
+          github_repo?: string | null
+          go_version?: string
+          id?: string
+          internet_access_enabled?: boolean
+          java_version?: string
+          name?: string
+          node_version?: string
+          php_version?: string
+          python_version?: string
+          ruby_version?: string
+          rust_version?: string
+          setup_script?: string | null
+          setup_script_mode?: string
+          swift_version?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -149,7 +261,7 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  test: {
+  codex_open: {
     Enums: {},
   },
 } as const
