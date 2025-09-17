@@ -32,11 +32,14 @@ import {
   serializeTableState, 
   updateSearchParams 
 } from "@/lib/data-table"
+import { cn } from "@/lib/utils"
 
 /**
  * Props for the DataTable component
  */
 export interface DataTableProps {
+  /** Custom CSS class name */
+  className?: string
   /** Array of column definitions that define the table structure */
   columns: ColumnDef<Record<string, unknown>, unknown>[]
   /** Array of data objects to display in the table */
@@ -101,9 +104,11 @@ interface DataTableInternalProps<TData, TValue> {
     onCancel?: () => void
     multiUpdateAction?: (ids: string[], data: Partial<TData>) => Promise<{ success: boolean; error?: string; updatedCount?: number }>
   }>
+  className?: string
 }
 
 export function DataTable<TData, TValue>({
+  className,
   columns,
   data,
   initialState,
@@ -188,7 +193,7 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className="">
+    <div className={cn("h-full", className)}>
         <div className="pb-2 ">
             <DataTableToolbar 
               table={table} 

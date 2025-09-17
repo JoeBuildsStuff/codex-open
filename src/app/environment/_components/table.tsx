@@ -5,6 +5,7 @@ import { getEnvironments } from "../_lib/queries"
 import { deleteEnvironments, createEnvironment, updateEnvironment, multiUpdateEnvironments } from "../_lib/actions"
 import { EnvironmentAddForm, EnvironmentEditForm, EnvironmentMultiEditForm } from "./form-wrapper"
 import { ColumnDef } from "@tanstack/react-table"
+import { toast } from "sonner"
 
 interface DataTableEnvironmentProps {
   searchParams?: SearchParams
@@ -18,7 +19,10 @@ export default async function DataTableEnvironment({
 
   if (error) {
     // TODO: Add a toast notification
-    console.error(error)
+    toast.error('Failed to fetch environments' , {
+      description: error.message,
+    })
+    return null
   }
 
   const pageCount = Math.ceil((count ?? 0) / (pagination?.pageSize ?? 10))
@@ -69,6 +73,7 @@ export default async function DataTableEnvironment({
         customAddForm={AddForm}
         customEditFormSingle={EditFormSingle}
         customEditFormMulti={EditFormMulti}
+        className="h-full"
       />
   )
 }
