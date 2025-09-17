@@ -4,7 +4,6 @@ import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import EnvironmentForm from "../_components/form"
 import { Environment } from "../_lib/validations"
-import type { TablesInsert } from "@/types/supabase"
 import { Button } from "@/components/ui/button"
 import { X, Plus, Save } from "lucide-react"
 import { toast } from "sonner"
@@ -33,7 +32,7 @@ export type EnvironmentFormData = {
 }
 
 // Helper function to transform form data to database format
-function transformFormDataToEnvironment(formData: EnvironmentFormData): TablesInsert<"environments"> {
+function transformFormDataToEnvironment(formData: EnvironmentFormData): Record<string, unknown> {
   const environmentVariables: Array<{ name: string; value: string; is_secret: boolean }> = []
   
   // Process environment variables
@@ -93,7 +92,7 @@ export function EnvironmentAddForm({
 }: {
   onSuccess?: () => void
   onCancel?: () => void
-  createAction?: (data: TablesInsert<"environments">) => Promise<{ success: boolean; error?: string }>
+  createAction?: (data: Record<string, unknown>) => Promise<{ success: boolean; error?: string }>
 }) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -128,17 +127,17 @@ export function EnvironmentAddForm({
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex-1 overflow-y-auto p-4">
+    <div className="h-full flex flex-col max-w-4xl mx-auto">
+      <div className="flex-1 overflow-y-auto">
         <EnvironmentForm
           onChange={handleFormDataChange}
         />
       </div>
       
-      <div className="flex justify-between gap-2 p-4 border-t bg-background">
+      <div className="flex justify-between gap-2 p-4  bg-background">
         <Button
           type="button"
-          variant="outline"
+          variant="red"
           onClick={onCancel}
           className="w-1/2"
         >
@@ -148,6 +147,7 @@ export function EnvironmentAddForm({
           onClick={handleSubmit}
           disabled={isSubmitting || !formData}
           className="w-1/2"
+          variant="blue"
         >
           <Plus className="size-4 shrink-0" />
           {isSubmitting ? "Adding..." : "Add Environment"}
@@ -162,12 +162,14 @@ export function EnvironmentEditForm({
   data,
   onSuccess,
   onCancel,
-  updateAction
+  updateAction,
+  className
 }: {
   data: Environment
   onSuccess?: () => void
   onCancel?: () => void
-  updateAction?: (id: string, data: TablesInsert<"environments">) => Promise<{ success: boolean; error?: string }>
+  updateAction?: (id: string, data: Record<string, unknown>) => Promise<{ success: boolean; error?: string }>
+  className?: string
 }) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -202,19 +204,20 @@ export function EnvironmentEditForm({
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex-1 overflow-y-auto p-4">
+    <div className="h-full flex flex-col max-w-4xl mx-auto">
+      <div className="flex-1 overflow-y-auto">
         <EnvironmentForm
           initialName={data.name || ""}
           initialDescription={data.description || ""}
           onChange={handleFormDataChange}
+          className={className}
         />
       </div>
       
-      <div className="flex justify-between gap-2 p-4 border-t bg-background">
+      <div className="flex justify-between gap-2 p-4  bg-background">
         <Button
           type="button"
-          variant="outline"
+          variant="red"
           onClick={onCancel}
           className="w-1/2"
         >
@@ -224,6 +227,7 @@ export function EnvironmentEditForm({
           onClick={handleSubmit}
           disabled={isSubmitting || !formData}
           className="w-1/2"
+          variant="blue"
         >
           <Save className="size-4 shrink-0" />
           {isSubmitting ? "Saving..." : "Save Changes"}
@@ -243,7 +247,7 @@ export function EnvironmentEditForm({
   selectedCount: number
   onSuccess?: () => void
   onCancel?: () => void
-  updateActionMulti?: (ids: string[], data: TablesInsert<"environments">) => Promise<{ success: boolean; error?: string; updatedCount?: number }>
+  updateActionMulti?: (ids: string[], data: Record<string, unknown>) => Promise<{ success: boolean; error?: string; updatedCount?: number }>
 }) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -292,8 +296,8 @@ export function EnvironmentEditForm({
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex-1 overflow-y-auto p-4">
+    <div className="h-full flex flex-col max-w-4xl mx-auto">
+      <div className="flex-1 overflow-y-auto">
         <EnvironmentForm
           onChange={handleFormDataChange}
           // Start with empty values for multi edit
@@ -302,10 +306,10 @@ export function EnvironmentEditForm({
         />
       </div>
       
-      <div className="flex justify-between gap-2 p-4 border-t bg-background">
+      <div className="flex justify-between gap-2 p-4 bg-background">
         <Button
           type="button"
-          variant="outline"
+          variant="red"
           onClick={onCancel}
           className="w-1/2"
         >
@@ -315,6 +319,7 @@ export function EnvironmentEditForm({
           onClick={handleSubmit}
           disabled={isSubmitting || !formData}
           className="w-1/2"
+          variant="blue"
         >
           <Save className="size-4 shrink-0" />
           {isSubmitting ? "Updating..." : `Update ${selectedCount} Environment${selectedCount > 1 ? 's' : ''}`}

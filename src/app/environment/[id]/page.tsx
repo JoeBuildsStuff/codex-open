@@ -1,5 +1,6 @@
-import EnvironmentForm from "../_components/form"
+import { EnvironmentEditForm } from "../_components/form-wrapper"
 import { getEnvironment } from "../_lib/queries"
+import { updateEnvironment } from "../_lib/actions"
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -12,7 +13,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     return (
       <div className="flex flex-col gap-4 p-1">
         <div className="text-center text-muted-foreground">
-          Error loading company
+          Error loading environment
         </div>
       </div>
     )
@@ -32,9 +33,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
   return (
     <div className="flex flex-col gap-4 p-1">
-      <EnvironmentForm 
-        initialName={environment.name || ""}
-        initialDescription={environment.description || ""}
+      <EnvironmentEditForm 
+        data={environment}
+        updateAction={updateEnvironment}
+        className="border border-border rounded-2xl"
       />
     </div>
   )

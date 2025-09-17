@@ -24,6 +24,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Separator } from "@/components/ui/separator";
 
 const createLocalId = () => Math.random().toString(36).slice(2, 10);
 
@@ -195,7 +196,7 @@ export default function EnvironmentForm({
 
   return (
     <div className={cn("flex flex-col gap-4 max-w-4xl mx-auto", className)}>
-      <Card className="w-full shadow-none">
+      <Card className="w-full shadow-none bg-background border border-none">
         <CardHeader>
           <CardTitle className=" text-blue-700 dark:text-blue-400">Environment</CardTitle>
           <CardDescription>Create a new environment</CardDescription>
@@ -205,8 +206,8 @@ export default function EnvironmentForm({
             <div className="flex flex-col md:flex-row gap-2">
               <Label className="w-full">Github Organization:</Label>
               <Select value={githubOrg} onValueChange={setGithubOrg}>
-                <SelectTrigger className="w-full shadow-none">
-                  <SelectValue placeholder="Select an organization" />
+                <SelectTrigger className="w-full shadow-none border-none">
+                  <SelectValue placeholder="Select organization" />
                 </SelectTrigger>
                 <SelectContent className="w-full">
                   <SelectItem value="acme-inc">Acme Inc</SelectItem>
@@ -219,7 +220,7 @@ export default function EnvironmentForm({
             <div className="flex flex-col md:flex-row gap-2">
               <Label className="w-full">Github Repository:</Label>
               <Select value={githubRepo} onValueChange={setGithubRepo}>
-                <SelectTrigger className="w-full shadow-none">
+                <SelectTrigger className="w-full shadow-none border-none">
                   <SelectValue placeholder="Select a repository" />
                 </SelectTrigger>
                 <SelectContent className="w-full">
@@ -233,7 +234,7 @@ export default function EnvironmentForm({
             <div className="flex flex-col md:flex-row gap-2">
               <Label className="w-full">Name:</Label>
               <Input
-                className="w-full shadow-none"
+                className="w-full shadow-none border-none"
                 placeholder="Enter the name of the environment"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
@@ -243,7 +244,7 @@ export default function EnvironmentForm({
             <div className="flex flex-col md:flex-row gap-2">
               <Label className="w-full">Description:</Label>
               <Textarea
-                className="w-full shadow-none"
+                className="w-full shadow-none border-none"
                 placeholder="Enter the description of the environment"
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
@@ -253,7 +254,9 @@ export default function EnvironmentForm({
         </CardContent>
       </Card>
 
-      <Card className="w-full shadow-none">
+      <Separator />
+
+      <Card className="w-full shadow-none bg-background border border-none">
         <CardHeader>
           <CardTitle className="text-blue-700 dark:text-blue-400">Container</CardTitle>
           <CardDescription>Configure the container</CardDescription>
@@ -264,8 +267,8 @@ export default function EnvironmentForm({
               <Label className="w-full">Image:</Label>
               <div className="flex flex-row gap-2 w-full">
                 <Select value={containerImage} onValueChange={setContainerImage}>
-                  <SelectTrigger className="w-full shadow-none">
-                    <SelectValue placeholder="Select an image" />
+                  <SelectTrigger className="w-full shadow-none border-none">
+                    <SelectValue placeholder="Select image" />
                   </SelectTrigger>
                   <SelectContent className="w-full">
                     <SelectItem value="universal">Universal</SelectItem>
@@ -275,8 +278,8 @@ export default function EnvironmentForm({
                 </Select>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <Settings />
+                    <Button variant="ghost" size="icon" className="border-none">
+                      <Settings className="size-4" strokeWidth={1} />
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[425px]">
@@ -290,8 +293,8 @@ export default function EnvironmentForm({
                       <div className="flex flex-col md:flex-row gap-2">
                         <Label className="w-full">Python:</Label>
                         <Select value={pythonVersion} onValueChange={setPythonVersion}>
-                          <SelectTrigger className="w-full shadow-none">
-                            <SelectValue placeholder="Select a Python version" />
+                          <SelectTrigger className="w-full shadow-none border-none">
+                            <SelectValue placeholder="Select Python version" />
                           </SelectTrigger>
                           <SelectContent className="w-full">
                             <SelectItem value="3.13">Python 3.13</SelectItem>
@@ -305,8 +308,8 @@ export default function EnvironmentForm({
                       <div className="flex flex-col md:flex-row gap-2">
                         <Label className="w-full">Node:</Label>
                         <Select value={nodeVersion} onValueChange={setNodeVersion}>
-                          <SelectTrigger className="w-full shadow-none">
-                            <SelectValue placeholder="Select a Node version" />
+                          <SelectTrigger className="w-full shadow-none border-none">
+                            <SelectValue placeholder="Select Node version" />
                           </SelectTrigger>
                           <SelectContent className="w-full">
                             <SelectItem value="22">Node 22</SelectItem>
@@ -319,8 +322,8 @@ export default function EnvironmentForm({
                       <div className="flex flex-col md:flex-row gap-2">
                         <Label className="w-full">Ruby:</Label>
                         <Select value={rubyVersion} onValueChange={setRubyVersion}>
-                          <SelectTrigger className="w-full shadow-none">
-                            <SelectValue placeholder="Select a Ruby version" />
+                          <SelectTrigger className="w-full shadow-none border-none">
+                            <SelectValue placeholder="Select Ruby version" />
                           </SelectTrigger>
                           <SelectContent className="w-full">
                             <SelectItem value="3.4.4">Ruby 3.4.4</SelectItem>
@@ -334,8 +337,8 @@ export default function EnvironmentForm({
                       <div className="flex flex-col md:flex-row gap-2">
                         <Label className="w-full">Rust:</Label>
                         <Select value={rustVersion} onValueChange={setRustVersion}>
-                          <SelectTrigger className="w-full shadow-none">
-                            <SelectValue placeholder="Select a Rust version" />
+                          <SelectTrigger className="w-full shadow-none border-none">
+                            <SelectValue placeholder="Select Rust version" />
                           </SelectTrigger>
                           <SelectContent className="w-full">
                             <SelectItem value="1.89.0">Rust 1.89.0</SelectItem>
@@ -349,8 +352,8 @@ export default function EnvironmentForm({
                       <div className="flex flex-col md:flex-row gap-2">
                         <Label className="w-full">Go:</Label>
                         <Select value={goVersion} onValueChange={setGoVersion}>
-                          <SelectTrigger className="w-full shadow-none">
-                            <SelectValue placeholder="Select a Go version" />
+                          <SelectTrigger className="w-full shadow-none border-none">
+                            <SelectValue placeholder="Select Go version" />
                           </SelectTrigger>
                           <SelectContent className="w-full">
                             <SelectItem value="1.24.3">Go 1.24.3</SelectItem>
@@ -364,8 +367,8 @@ export default function EnvironmentForm({
                       <div className="flex flex-col md:flex-row gap-2">
                         <Label className="w-full">Bun:</Label>
                         <Select value={bunVersion} onValueChange={setBunVersion}>
-                          <SelectTrigger className="w-full shadow-none">
-                            <SelectValue placeholder="Select a Bun version" />
+                          <SelectTrigger className="w-full shadow-none border-none">
+                            <SelectValue placeholder="Select Bun version" />
                           </SelectTrigger>
                           <SelectContent className="w-full">
                             <SelectItem value="1.2.14">Bun 1.2.14</SelectItem>
@@ -379,8 +382,8 @@ export default function EnvironmentForm({
                       <div className="flex flex-col md:flex-row gap-2">
                         <Label className="w-full">PHP:</Label>
                         <Select value={phpVersion} onValueChange={setPhpVersion}>
-                          <SelectTrigger className="w-full shadow-none">
-                            <SelectValue placeholder="Select a PHP version" />
+                          <SelectTrigger className="w-full shadow-none border-none">
+                            <SelectValue placeholder="Select PHP version" />
                           </SelectTrigger>
                           <SelectContent className="w-full">
                             <SelectItem value="8.4">PHP 8.4</SelectItem>
@@ -394,8 +397,8 @@ export default function EnvironmentForm({
                       <div className="flex flex-col md:flex-row gap-2">
                         <Label className="w-full">Java:</Label>
                         <Select value={javaVersion} onValueChange={setJavaVersion}>
-                          <SelectTrigger className="w-full shadow-none">
-                            <SelectValue placeholder="Select a Java version" />
+                          <SelectTrigger className="w-full shadow-none border-none">
+                            <SelectValue placeholder="Select Java version" />
                           </SelectTrigger>
                           <SelectContent className="w-full">
                             <SelectItem value="21">Java 21</SelectItem>
@@ -409,8 +412,8 @@ export default function EnvironmentForm({
                       <div className="flex flex-col md:flex-row gap-2">
                         <Label className="w-full">Swift:</Label>
                         <Select value={swiftVersion} onValueChange={setSwiftVersion}>
-                          <SelectTrigger className="w-full shadow-none">
-                            <SelectValue placeholder="Select a Swift version" />
+                          <SelectTrigger className="w-full shadow-none border-none">
+                            <SelectValue placeholder="Select Swift version" />
                           </SelectTrigger>
                           <SelectContent className="w-full">
                             <SelectItem value="6.1">Swift 6.1</SelectItem>
@@ -432,7 +435,7 @@ export default function EnvironmentForm({
                 {environmentVariables.map((envVar) => (
                   <div key={envVar.id} className="flex flex-row gap-2 w-full">
                     <Input
-                      className="w-full shadow-none"
+                      className="w-full shadow-none border-none"
                       placeholder="Key"
                       value={envVar.key}
                       onChange={(event) =>
@@ -448,7 +451,7 @@ export default function EnvironmentForm({
                       }}
                     />
                     <Input
-                      className="w-full shadow-none"
+                      className="w-full shadow-none border-none"
                       placeholder="Value"
                       value={envVar.value}
                       onChange={(event) =>
@@ -456,12 +459,11 @@ export default function EnvironmentForm({
                       }
                     />
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="icon"
                       onClick={() => removeEnvironmentVariable(envVar.id)}
-                      type="button"
                     >
-                      <Trash />
+                      <Trash className="size-4" strokeWidth={1} />
                     </Button>
                   </div>
                 ))}
@@ -474,7 +476,7 @@ export default function EnvironmentForm({
                 {secrets.map((secret) => (
                   <div key={secret.id} className="flex flex-row gap-2 w-full">
                     <Input
-                      className="w-full shadow-none"
+                      className="w-full shadow-none border-none"
                       placeholder="Key"
                       value={secret.key}
                       onChange={(event) => updateSecret(secret.id, "key", event.target.value)}
@@ -488,18 +490,17 @@ export default function EnvironmentForm({
                       }}
                     />
                     <Input
-                      className="w-full shadow-none"
+                      className="w-full shadow-none border-none"
                       placeholder="Value"
                       value={secret.value}
                       onChange={(event) => updateSecret(secret.id, "value", event.target.value)}
                     />
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="icon"
                       onClick={() => removeSecret(secret.id)}
-                      type="button"
                     >
-                      <Trash />
+                      <Trash className="size-4" strokeWidth={1} />
                     </Button>
                   </div>
                 ))}
@@ -517,7 +518,7 @@ export default function EnvironmentForm({
                     setContainerCachingEnabled(value === "enabled");
                   }}
                   className="w-full"
-                  variant="outline"
+                  // variant="outline"
                 >
                   <ToggleGroupItem value="disabled">Disabled</ToggleGroupItem>
                   <ToggleGroupItem value="enabled">Enabled</ToggleGroupItem>
@@ -533,7 +534,7 @@ export default function EnvironmentForm({
                   value={setupScriptMode}
                   onValueChange={handleSetupScriptModeChange}
                   className="w-full"
-                  variant="outline"
+                  // variant="outline"
                 >
                   <ToggleGroupItem value="1">Automatic</ToggleGroupItem>
                   <ToggleGroupItem value="2">Manual</ToggleGroupItem>
@@ -546,7 +547,7 @@ export default function EnvironmentForm({
                 <Label className="w-full"></Label>
                 <div className="flex flex-row gap-2 w-full">
                   <Textarea
-                    className="w-full shadow-none"
+                    className="w-full shadow-none border-none"
                     placeholder="Enter your custom setup script commands..."
                     rows={6}
                     value={setupScript}
@@ -567,7 +568,7 @@ export default function EnvironmentForm({
                     setInternetAccessEnabled(value === "enabled");
                   }}
                   className="w-full"
-                  variant="outline"
+                  // variant="outline"
                 >
                   <ToggleGroupItem value="disabled">Disabled</ToggleGroupItem>
                   <ToggleGroupItem value="enabled">Enabled</ToggleGroupItem>
