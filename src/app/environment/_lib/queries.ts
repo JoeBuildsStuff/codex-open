@@ -14,7 +14,7 @@ export async function getEnvironment(id: string): Promise<{
     .eq("id", id)
     .single()
   
-  return { data: data ?? null, error }
+  return { data: data as Environment | null, error }
 }
 
 export async function getEnvironments(searchParams: SearchParams): Promise<{
@@ -105,7 +105,7 @@ export async function getEnvironments(searchParams: SearchParams): Promise<{
   const { data, count, error } = await query
 
   return {
-    data: data || [],
+    data: (data || []) as Environment[],
     count: count ?? 0,
     error
   }

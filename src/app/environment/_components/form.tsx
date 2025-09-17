@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Separator } from "@/components/ui/separator";
+import { EnvironmentFormData } from "../_lib/validations";
 
 const createLocalId = () => Math.random().toString(36).slice(2, 10);
 
@@ -52,28 +53,7 @@ export interface EnvironmentFormProps {
   /**
    * Callback fired when form data changes
    */
-  onChange?: (data: {
-    name: string;
-    description: string;
-    github_org?: string;
-    github_repo?: string;
-    container_image?: string;
-    python_version?: string;
-    node_version?: string;
-    ruby_version?: string;
-    rust_version?: string;
-    go_version?: string;
-    bun_version?: string;
-    php_version?: string;
-    java_version?: string;
-    swift_version?: string;
-    setup_script_mode?: string;
-    setup_script?: string;
-    container_caching_enabled?: boolean;
-    internet_access_enabled?: boolean;
-    environment_variables?: Array<{ key: string; value: string }>;
-    secrets?: Array<{ key: string; value: string }>;
-  }) => void;
+  onChange?: (data: EnvironmentFormData) => void;
   /**
    * Custom CSS class name
    */

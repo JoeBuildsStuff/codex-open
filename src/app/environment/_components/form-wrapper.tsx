@@ -3,36 +3,19 @@
 import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import EnvironmentForm from "../_components/form"
-import { Environment } from "../_lib/validations"
+import { 
+  Environment, 
+  EnvironmentFormData,
+  EnvironmentFormDataSchema,
+  type EnvironmentInsert,
+  type EnvironmentUpdate
+} from "../_lib/validations"
 import { Button } from "@/components/ui/button"
 import { X, Plus, Save } from "lucide-react"
 import { toast } from "sonner"
 
-export type EnvironmentFormData = {
-  name: string
-  description: string
-  github_org?: string
-  github_repo?: string
-  container_image?: string
-  python_version?: string
-  node_version?: string
-  ruby_version?: string
-  rust_version?: string
-  go_version?: string
-  bun_version?: string
-  php_version?: string
-  java_version?: string
-  swift_version?: string
-  setup_script_mode?: string
-  setup_script?: string
-  container_caching_enabled?: boolean
-  internet_access_enabled?: boolean
-  environment_variables?: Array<{ key: string; value: string }>
-  secrets?: Array<{ key: string; value: string }>
-}
-
 // Helper function to transform form data to database format
-function transformFormDataToEnvironment(formData: EnvironmentFormData): Record<string, unknown> {
+function transformFormDataToEnvironment(formData: EnvironmentFormData): EnvironmentInsert {
   const environmentVariables: Array<{ name: string; value: string; is_secret: boolean }> = []
   
   // Process environment variables
@@ -61,25 +44,28 @@ function transformFormDataToEnvironment(formData: EnvironmentFormData): Record<s
     })
   }
   
+  // Validate and transform the form data
+  const validatedFormData = EnvironmentFormDataSchema.parse(formData)
+  
   return {
-    name: formData.name,
-    description: formData.description,
-    github_org: formData.github_org || null,
-    github_repo: formData.github_repo || null,
-    container_image: formData.container_image || "universal",
-    python_version: formData.python_version || "3.12",
-    node_version: formData.node_version || "20",
-    ruby_version: formData.ruby_version || "3.4.4",
-    rust_version: formData.rust_version || "1.89.0",
-    go_version: formData.go_version || "1.24.3",
-    bun_version: formData.bun_version || "1.2.14",
-    php_version: formData.php_version || "8.4",
-    java_version: formData.java_version || "21",
-    swift_version: formData.swift_version || "6.1",
-    setup_script_mode: formData.setup_script_mode === "2" ? "manual" : "automatic",
-    setup_script: formData.setup_script?.trim() || null,
-    container_caching_enabled: formData.container_caching_enabled || false,
-    internet_access_enabled: formData.internet_access_enabled || false,
+    name: validatedFormData.name,
+    description: validatedFormData.description || null,
+    github_org: validatedFormData.github_org || null,
+    github_repo: validatedFormData.github_repo || null,
+    container_image: validatedFormData.container_image as "universal" | "node" | "python",
+    python_version: validatedFormData.python_version,
+    node_version: validatedFormData.node_version,
+    ruby_version: validatedFormData.ruby_version,
+    rust_version: validatedFormData.rust_version,
+    go_version: validatedFormData.go_version,
+    bun_version: validatedFormData.bun_version,
+    php_version: validatedFormData.php_version,
+    java_version: validatedFormData.java_version,
+    swift_version: validatedFormData.swift_version,
+    setup_script_mode: validatedFormData.setup_script_mode === "2" ? "manual" : "automatic",
+    setup_script: validatedFormData.setup_script?.trim() || null,
+    container_caching_enabled: validatedFormData.container_caching_enabled,
+    internet_access_enabled: validatedFormData.internet_access_enabled,
     environment_variables: environmentVariables.length > 0 ? environmentVariables : undefined
   }
 }
@@ -92,7 +78,7 @@ export function EnvironmentAddForm({
 }: {
   onSuccess?: () => void
   onCancel?: () => void
-  createAction?: (data: Record<string, unknown>) => Promise<{ success: boolean; error?: string }>
+  createAction?: (data: EnvironmentInsert) => Promise<{ success: boolean; error?: string }>
 }) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -120,7 +106,13 @@ export function EnvironmentAddForm({
       }
     } catch (error) {
       console.error("Error creating environment:", error)
-      toast.error("An unexpected error occurred while creating the environment.")
+      
+      // Handle validation errors
+      if (error instanceof Error && error.name === 'ZodError') {
+        toast.error("Please check your input and try again")
+      } else {
+        toast.error("An unexpected error occurred while creating the environment.")
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -168,7 +160,7 @@ export function EnvironmentEditForm({
   data: Environment
   onSuccess?: () => void
   onCancel?: () => void
-  updateAction?: (id: string, data: Record<string, unknown>) => Promise<{ success: boolean; error?: string }>
+  updateAction?: (id: string, data: EnvironmentUpdate) => Promise<{ success: boolean; error?: string }>
   className?: string
 }) {
   const router = useRouter()
@@ -247,7 +239,7 @@ export function EnvironmentEditForm({
   selectedCount: number
   onSuccess?: () => void
   onCancel?: () => void
-  updateActionMulti?: (ids: string[], data: Record<string, unknown>) => Promise<{ success: boolean; error?: string; updatedCount?: number }>
+  updateActionMulti?: (ids: string[], data: EnvironmentUpdate) => Promise<{ success: boolean; error?: string; updatedCount?: number }>
 }) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
