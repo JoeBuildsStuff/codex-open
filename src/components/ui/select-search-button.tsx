@@ -95,10 +95,10 @@ export default function SelectSearchButton({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0"
+          className="border-input w-full min-w-[var(--radix-popper-anchor-width)] p-0 rounded-2xl"
           align="start"
         >
-          <Command>
+          <Command className="rounded-2xl">
             <CommandInput placeholder={searchPlaceholder} />
             <CommandList>
               <CommandEmpty>{emptyMessage}</CommandEmpty>
@@ -122,7 +122,8 @@ export default function SelectSearchButton({
                   <CommandGroup>
                     <Button
                       variant="ghost"
-                      className="w-full justify-start font-normal"
+                      size="sm"
+                      className="w-full justify-start font-normal rounded-xl rounded-t-none"
                       onClick={onButtonClick}
                     >
                       {buttonIcon}
